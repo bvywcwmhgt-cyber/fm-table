@@ -3,247 +3,641 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FM Style League Table</title>
+  <title>Div.1 League Table (FM-style)</title>
 
-  <!-- Inter font -->
+  <!-- Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
       --bg:#0b0f18;
       --panel:#111827;
-      --line:rgba(255,255,255,.1);
-      --text:rgba(255,255,255,.9);
-      --muted:rgba(255,255,255,.6);
-      --accent:#a855f7;
-      --good:#22c55e;
-      --mid:#eab308;
-      --bad:#ef4444;
+      --panel2:#0f172a;
+      --line:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.88);
+      --muted:rgba(255,255,255,.60);
+
+      --gold:#facc15;   /* 優勝：黄色 */
+      --orange:#fb923c; /* 入れ替え戦：オレンジ */
+      --red:#ef4444;    /* 降格：赤 */
+
+      --btn:#1f2937;
+      --btn2:#0b1220;
     }
 
     *{ box-sizing:border-box; }
 
     body{
       margin:0;
-      background:var(--bg);
+      background:
+        radial-gradient(1000px 700px at 70% -10%, rgba(168,85,247,.18), transparent 55%),
+        radial-gradient(900px 600px at 0% 20%, rgba(59,130,246,.10), transparent 50%),
+        var(--bg);
       color:var(--text);
-      font-family:Inter,"Noto Sans JP",system-ui,sans-serif;
+      font-family: Inter, "Noto Sans JP", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     }
 
     .wrap{
-      max-width:960px;
-      margin:20px auto;
-      padding:0 12px;
+      max-width:1100px;
+      margin:24px auto;
+      padding:0 14px 40px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
     }
 
-    h1{
-      font-size:16px;
-      margin:0 0 6px;
-      font-weight:600;
+    @media (max-width: 860px){
+      .wrap{ grid-template-columns: 1fr; }
     }
 
-    .sub{
-      font-size:12px;
-      color:var(--muted);
+    .header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
       margin-bottom:10px;
     }
 
-    .card{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:14px;
-      overflow:hidden;
+    .title{
+      font-weight:800;
+      letter-spacing:.2px;
+      font-size:16px;
+      margin:0;
     }
 
-    .scroll{
-      overflow-x:auto;
+    .subtitle{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:4px;
+    }
+
+    .legend{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .tag{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      padding:8px 10px;
+      border-radius:12px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+
+    .swatch{
+      width:10px;height:10px;border-radius:3px;
+      border:1px solid rgba(255,255,255,.20);
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 10px 25px rgba(0,0,0,.35);
+    }
+
+    .card-h{
+      padding:12px 12px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .card-h h2{
+      font-size:13px;
+      margin:0;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    .small{
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    /* TABLE */
+    .table-scroll{
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
     }
 
     table{
       width:100%;
-      min-width:760px;
+      min-width:820px;
       border-collapse:collapse;
-      font-size:13px;
     }
 
     thead th{
       position:sticky;
       top:0;
-      background:#0f172a;
-      color:var(--muted);
+      z-index:1;
+      background:rgba(17,24,39,.92);
+      backdrop-filter:blur(6px);
       text-align:left;
-      padding:10px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      padding:12px 12px;
       border-bottom:1px solid var(--line);
       white-space:nowrap;
     }
 
     tbody td{
-      padding:10px;
-      border-bottom:1px solid rgba(255,255,255,.05);
+      padding:12px 12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      font-size:13px;
       white-space:nowrap;
+      font-variant-numeric: tabular-nums;
     }
 
     tbody tr:hover{
-      background:rgba(168,85,247,.08);
+      background:rgba(255,255,255,.03);
     }
 
-    tbody tr[data-zone="auto"]{ border-left:4px solid var(--good); }
-    tbody tr[data-zone="po"]{ border-left:4px solid var(--mid); }
-    tbody tr[data-zone="releg"]{ border-left:4px solid var(--bad); }
+    /* ZONE LEFT LINE */
+    tbody tr{ position:relative; }
+    tbody tr[data-zone]::before{
+      content:"";
+      position:absolute;
+      left:0; top:0; bottom:0;
+      width:4px;
+    }
+    tbody tr[data-zone="champ"]::before{ background:var(--gold); }
+    tbody tr[data-zone="playoff"]::before{ background:var(--orange); }
+    tbody tr[data-zone="releg"]::before{ background:var(--red); }
 
-    .rank{ color:var(--muted); width:40px; }
-    .num{ text-align:right; font-variant-numeric:tabular-nums; }
-    .pts{ font-weight:700; text-align:right; }
+    .rank{ width:54px; color:var(--muted); }
+    .team{ display:flex; align-items:center; gap:10px; min-width:240px; }
+    img.crest{
+      width:24px;height:24px;border-radius:50%;
+      object-fit:cover;background:#fff;
+      border:1px solid rgba(255,255,255,.12);
+      flex-shrink:0; display:block;
+    }
+    .team-name{ font-weight:800; letter-spacing:.2px; }
 
-    .team{
+    .nums{ text-align:right; }
+    .points{ font-weight:900; text-align:right; color:#fff; }
+
+    .zone{ color:var(--muted); font-size:12px; }
+    .zone strong{ color:var(--text); font-weight:900; }
+
+    /* RIGHT PANEL */
+    .panel{
+      padding:12px;
       display:flex;
-      align-items:center;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .formgrid{
+      display:grid;
+      grid-template-columns: 1fr 64px 64px 1fr;
       gap:8px;
-      min-width:200px;
-    }
-
-    .crest{
-      width:22px;
-      height:22px;
-      border-radius:6px;
-      background:rgba(255,255,255,.1);
-      display:flex;
       align-items:center;
-      justify-content:center;
-      font-size:11px;
-      color:#fff;
+    }
+    @media (max-width: 420px){
+      .formgrid{ grid-template-columns: 1fr 58px 58px 1fr; }
     }
 
-    .form{
+    select, input{
+      width:100%;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      padding:10px 10px;
+      color:var(--text);
+      font-size:13px;
+      outline:none;
+    }
+    input[type="number"]{
+      text-align:center;
+      font-variant-numeric: tabular-nums;
+    }
+    label{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin:0 0 6px;
+    }
+
+    .btnrow{
       display:flex;
-      gap:5px;
-      justify-content:flex-end;
+      gap:8px;
+      flex-wrap:wrap;
     }
+    button{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:800;
+      letter-spacing:.2px;
+      cursor:pointer;
+    }
+    button.primary{
+      background:linear-gradient(180deg, rgba(250,204,21,.20), rgba(250,204,21,.08));
+      border-color:rgba(250,204,21,.35);
+    }
+    button.danger{
+      background:linear-gradient(180deg, rgba(239,68,68,.18), rgba(239,68,68,.08));
+      border-color:rgba(239,68,68,.35);
+    }
+    button:active{ transform:translateY(1px); }
 
-    .dot{
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      background:rgba(255,255,255,.2);
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
     }
-    .w{ background:var(--good); }
-    .d{ background:var(--mid); }
-    .l{ background:var(--bad); }
+    .item{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      border-radius:12px;
+      padding:10px 10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+    }
+    .item small{ color:var(--muted); display:block; font-size:12px; margin-top:2px; }
+    .mono{ font-variant-numeric: tabular-nums; }
+
+    .hint{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+    }
+    code{
+      background:rgba(255,255,255,.06);
+      padding:2px 6px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.08);
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <h1>リーグ順位表</h1>
-    <div class="sub">FM style / スマホ対応（横スクロール）</div>
+    <!-- LEFT: TABLE -->
+    <div>
+      <div class="header">
+        <div>
+          <h1 class="title">Div.1 リーグ順位表</h1>
+          <div class="subtitle">結果入力 → 自動更新 / スマホ対応（横スクロール）</div>
+        </div>
 
+        <div class="legend">
+          <div class="tag"><span class="swatch" style="background:var(--gold)"></span> 1位：優勝 🟨</div>
+          <div class="tag"><span class="swatch" style="background:var(--orange)"></span> 8位：入れ替え戦 🟧</div>
+          <div class="tag"><span class="swatch" style="background:var(--red)"></span> 9-10位：降格 🟥</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h">
+          <h2>順位表</h2>
+          <div class="small"><span id="matchCount">0</span> 試合入力済み</div>
+        </div>
+
+        <div class="table-scroll">
+          <table aria-label="league table">
+            <thead>
+              <tr>
+                <th class="rank">順位</th>
+                <th>チーム</th>
+                <th class="nums">試</th>
+                <th class="nums">勝</th>
+                <th class="nums">分</th>
+                <th class="nums">負</th>
+                <th class="nums">得</th>
+                <th class="nums">失</th>
+                <th class="nums">差</th>
+                <th class="points">勝点</th>
+                <th>ステータス</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- JSで描画 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: INPUT -->
     <div class="card">
-      <div class="scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>順位</th>
-              <th>チーム</th>
-              <th class="num">試</th>
-              <th class="num">勝</th>
-              <th class="num">分</th>
-              <th class="num">負</th>
-              <th class="num">得</th>
-              <th class="num">失</th>
-              <th class="num">差</th>
-              <th class="pts">勝点</th>
-              <th class="num">調子</th>
-            </tr>
-          </thead>
+      <div class="card-h">
+        <h2>結果入力</h2>
+        <div class="small">追加すると即反映</div>
+      </div>
 
-          <tbody>
-            <tr data-zone="auto">
-              <td class="rank">1</td>
-              <td>
-                <div class="team">
-                  <div class="crest">LU</div>
-                  Luton
-                </div>
-              </td>
-              <td class="num">2</td>
-              <td class="num">2</td>
-              <td class="num">0</td>
-              <td class="num">0</td>
-              <td class="num">7</td>
-              <td class="num">1</td>
-              <td class="num">+6</td>
-              <td class="pts">6</td>
-              <td>
-                <div class="form">
-                  <span class="dot w"></span>
-                  <span class="dot w"></span>
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                </div>
-              </td>
-            </tr>
+      <div class="panel">
+        <div>
+          <label>ホーム</label>
+          <select id="homeTeam"></select>
+        </div>
 
-            <tr data-zone="po">
-              <td class="rank">2</td>
-              <td>
-                <div class="team">
-                  <div class="crest">NO</div>
-                  Northampton
-                </div>
-              </td>
-              <td class="num">2</td>
-              <td class="num">2</td>
-              <td class="num">0</td>
-              <td class="num">0</td>
-              <td class="num">4</td>
-              <td class="num">1</td>
-              <td class="num">+3</td>
-              <td class="pts">6</td>
-              <td>
-                <div class="form">
-                  <span class="dot w"></span>
-                  <span class="dot w"></span>
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                </div>
-              </td>
-            </tr>
+        <div class="formgrid">
+          <div>
+            <label>Home</label>
+            <input id="homeGoals" type="number" inputmode="numeric" min="0" max="99" value="0">
+          </div>
 
-            <tr data-zone="releg">
-              <td class="rank">22</td>
-              <td>
-                <div class="team">
-                  <div class="crest">WG</div>
-                  Wigan
-                </div>
-              </td>
-              <td class="num">2</td>
-              <td class="num">0</td>
-              <td class="num">0</td>
-              <td class="num">2</td>
-              <td class="num">2</td>
-              <td class="num">4</td>
-              <td class="num">-2</td>
-              <td class="pts">0</td>
-              <td>
-                <div class="form">
-                  <span class="dot l"></span>
-                  <span class="dot l"></span>
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                </div>
-              </td>
-            </tr>
+          <div>
+            <label>—</label>
+            <input id="awayGoals" type="number" inputmode="numeric" min="0" max="99" value="0">
+          </div>
 
-          </tbody>
-        </table>
+          <div>
+            <label>アウェイ</label>
+            <select id="awayTeam"></select>
+          </div>
+        </div>
+
+        <div class="btnrow">
+          <button class="primary" id="addMatch">試合を追加</button>
+          <button id="resetSeason">全リセット</button>
+          <button class="danger" id="undoLast">直近を削除</button>
+        </div>
+
+        <div class="hint">
+          画像は <code>assets/crests/〇〇.png</code> を使用。<br>
+          例：<code>assets/crests/freesia.png</code><br>
+          ※ ファイル名（大文字小文字/拡張子）が違うと表示されない。
+        </div>
+
+        <div>
+          <div class="card-h" style="padding:0;border:none; margin-top:8px;">
+            <h2 style="margin:0;font-size:13px;">入力済み試合</h2>
+            <div class="small">直近10件表示</div>
+          </div>
+          <div class="list" id="matchList"></div>
+        </div>
       </div>
     </div>
   </div>
+
+  <script>
+    // ============================
+    // 1) チーム定義（表示名とロゴ）
+    // ============================
+    const teams = [
+      { id:"FREESIA", name:"FREESIA", crest:"assets/crests/freesia.png" },
+      { id:"NAKAYOSHIKOYOSHI", name:"NAKAYOSHIKOYOSHI", crest:"assets/crests/nakayoshi.png" },
+      { id:"WIZARD", name:"WIZARD", crest:"assets/crests/wizard.png" },
+      { id:"PIMAN TRIBE", name:"PIMAN TRIBE", crest:"assets/crests/piman.png" },
+      { id:"GUROU", name:"GUROU", crest:"assets/crests/gurou.png" },
+      { id:"NEXUS", name:"NEXUS", crest:"assets/crests/nexus.png" },
+      { id:"TAKI", name:"TAKI", crest:"assets/crests/taki.png" },
+      { id:"MIRU KING", name:"MIRU KING", crest:"assets/crests/miru-king.png" },
+      { id:"KAGURA", name:"KAGURA", crest:"assets/crests/kagura.png" },
+      { id:"LETHAL", name:"LETHAL", crest:"assets/crests/lethal.png" },
+    ];
+
+    // ============================
+    // 2) 状態（試合一覧）
+    // ============================
+    // {homeId, awayId, hg, ag, ts}
+    let matches = [];
+
+    // localStorageで保存（ページ更新しても残る）
+    const LS_KEY = "div1_matches_v1";
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if(raw){
+          const parsed = JSON.parse(raw);
+          if(Array.isArray(parsed)) matches = parsed;
+        }
+      }catch(e){}
+    }
+    function save(){
+      try{ localStorage.setItem(LS_KEY, JSON.stringify(matches)); }catch(e){}
+    }
+
+    // ============================
+    // 3) 集計
+    // ============================
+    function emptyStats(team){
+      return {
+        id: team.id,
+        name: team.name,
+        crest: team.crest,
+        p:0,w:0,d:0,l:0,gf:0,ga:0,gd:0,pts:0
+      };
+    }
+
+    function computeTable(){
+      const map = new Map(teams.map(t => [t.id, emptyStats(t)]));
+
+      for(const m of matches){
+        const home = map.get(m.homeId);
+        const away = map.get(m.awayId);
+        if(!home || !away) continue;
+
+        home.p++; away.p++;
+        home.gf += m.hg; home.ga += m.ag;
+        away.gf += m.ag; away.ga += m.hg;
+
+        if(m.hg > m.ag){
+          home.w++; home.pts += 3;
+          away.l++;
+        }else if(m.hg < m.ag){
+          away.w++; away.pts += 3;
+          home.l++;
+        }else{
+          home.d++; away.d++;
+          home.pts += 1; away.pts += 1;
+        }
+      }
+
+      // GD更新
+      for(const s of map.values()){
+        s.gd = s.gf - s.ga;
+      }
+
+      // ソート：勝点 → 得失点差 → 得点 → 名前
+      const arr = Array.from(map.values());
+      arr.sort((a,b)=>{
+        if(b.pts !== a.pts) return b.pts - a.pts;
+        if(b.gd !== a.gd) return b.gd - a.gd;
+        if(b.gf !== a.gf) return b.gf - a.gf;
+        return a.name.localeCompare(b.name, "en");
+      });
+
+      return arr;
+    }
+
+    // ============================
+    // 4) ゾーン判定（順位に応じて色）
+    // 1位: champ, 8位: playoff, 9-10位: releg
+    // ============================
+    function zoneForRank(rank){
+      if(rank === 1) return { key:"champ", label:"優勝 🟨" };
+      if(rank === 8) return { key:"playoff", label:"入れ替え戦 🟧" };
+      if(rank === 9 || rank === 10) return { key:"releg", label:"降格 🟥" };
+      return { key:"", label:"-" };
+    }
+
+    // ============================
+    // 5) 描画
+    // ============================
+    const tableBody = document.getElementById("tableBody");
+    const matchList = document.getElementById("matchList");
+    const matchCount = document.getElementById("matchCount");
+
+    function render(){
+      const rows = computeTable();
+
+      // テーブル
+      tableBody.innerHTML = "";
+      rows.forEach((r, idx)=>{
+        const rank = idx + 1;
+        const z = zoneForRank(rank);
+
+        const tr = document.createElement("tr");
+        if(z.key) tr.setAttribute("data-zone", z.key);
+
+        tr.innerHTML = `
+          <td class="rank">${rank}</td>
+          <td>
+            <div class="team">
+              <img class="crest" src="${r.crest}" alt="${escapeHtml(r.name)}">
+              <span class="team-name">${escapeHtml(r.name)}</span>
+            </div>
+          </td>
+          <td class="nums">${r.p}</td>
+          <td class="nums">${r.w}</td>
+          <td class="nums">${r.d}</td>
+          <td class="nums">${r.l}</td>
+          <td class="nums">${r.gf}</td>
+          <td class="nums">${r.ga}</td>
+          <td class="nums">${formatGd(r.gd)}</td>
+          <td class="points">${r.pts}</td>
+          <td class="zone">${z.key ? `<strong>${z.label}</strong>` : `-`}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+
+      // 試合リスト（直近10件）
+      matchCount.textContent = matches.length.toString();
+      matchList.innerHTML = "";
+      const recent = matches.slice().reverse().slice(0, 10);
+      if(recent.length === 0){
+        matchList.innerHTML = `<div class="hint">まだ試合がありません。右上のフォームから追加してね。</div>`;
+      }else{
+        for(const m of recent){
+          const home = teams.find(t=>t.id===m.homeId)?.name ?? m.homeId;
+          const away = teams.find(t=>t.id===m.awayId)?.name ?? m.awayId;
+          const when = new Date(m.ts || Date.now());
+          const stamp = `${when.getFullYear()}/${pad2(when.getMonth()+1)}/${pad2(when.getDate())} ${pad2(when.getHours())}:${pad2(when.getMinutes())}`;
+
+          const div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML = `
+            <div>
+              <div>${escapeHtml(home)} <span class="mono">${m.hg} - ${m.ag}</span> ${escapeHtml(away)}</div>
+              <small>${stamp}</small>
+            </div>
+            <div class="small">+反映済</div>
+          `;
+          matchList.appendChild(div);
+        }
+      }
+    }
+
+    function formatGd(gd){
+      return gd > 0 ? `+${gd}` : `${gd}`;
+    }
+    function pad2(n){ return String(n).padStart(2,"0"); }
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
+    }
+
+    // ============================
+    // 6) 入力UI
+    // ============================
+    const homeTeam = document.getElementById("homeTeam");
+    const awayTeam = document.getElementById("awayTeam");
+    const homeGoals = document.getElementById("homeGoals");
+    const awayGoals = document.getElementById("awayGoals");
+
+    function fillSelects(){
+      const opts = teams.map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join("");
+      homeTeam.innerHTML = opts;
+      awayTeam.innerHTML = opts;
+
+      // 初期で被らないように
+      homeTeam.value = teams[0].id;
+      awayTeam.value = teams[1].id;
+    }
+
+    document.getElementById("addMatch").addEventListener("click", ()=>{
+      const h = homeTeam.value;
+      const a = awayTeam.value;
+
+      if(h === a){
+        alert("ホームとアウェイは別チームにしてね。");
+        return;
+      }
+
+      const hg = clampInt(homeGoals.value, 0, 99);
+      const ag = clampInt(awayGoals.value, 0, 99);
+
+      matches.push({ homeId:h, awayId:a, hg, ag, ts: Date.now() });
+      save();
+      render();
+    });
+
+    document.getElementById("undoLast").addEventListener("click", ()=>{
+      if(matches.length === 0){
+        alert("削除できる試合がありません。");
+        return;
+      }
+      matches.pop();
+      save();
+      render();
+    });
+
+    document.getElementById("resetSeason").addEventListener("click", ()=>{
+      const ok = confirm("全試合をリセットします。よろしいですか？");
+      if(!ok) return;
+      matches = [];
+      save();
+      render();
+    });
+
+    function clampInt(v, min, max){
+      const n = Number.parseInt(v, 10);
+      if(Number.isNaN(n)) return min;
+      return Math.max(min, Math.min(max, n));
+    }
+
+    // 初期化
+    load();
+    fillSelects();
+    render();
+  </script>
 </body>
 </html>
