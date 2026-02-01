@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FM Style League Table</title>
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b0f18;
+      --panel:#111827;
+      --line:rgba(255,255,255,.1);
+      --text:rgba(255,255,255,.9);
+      --muted:rgba(255,255,255,.6);
+      --accent:#a855f7;
+      --good:#22c55e;
+      --mid:#eab308;
+      --bad:#ef4444;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Inter,"Noto Sans JP",system-ui,sans-serif;
+    }
+
+    .wrap{
+      max-width:960px;
+      margin:20px auto;
+      padding:0 12px;
+    }
+
+    h1{
+      font-size:16px;
+      margin:0 0 6px;
+      font-weight:600;
+    }
+
+    .sub{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+    }
+
+    .scroll{
+      overflow-x:auto;
+    }
+
+    table{
+      width:100%;
+      min-width:760px;
+      border-collapse:collapse;
+      font-size:13px;
+    }
+
+    thead th{
+      position:sticky;
+      top:0;
+      background:#0f172a;
+      color:var(--muted);
+      text-align:left;
+      padding:10px;
+      border-bottom:1px solid var(--line);
+      white-space:nowrap;
+    }
+
+    tbody td{
+      padding:10px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      white-space:nowrap;
+    }
+
+    tbody tr:hover{
+      background:rgba(168,85,247,.08);
+    }
+
+    tbody tr[data-zone="auto"]{ border-left:4px solid var(--good); }
+    tbody tr[data-zone="po"]{ border-left:4px solid var(--mid); }
+    tbody tr[data-zone="releg"]{ border-left:4px solid var(--bad); }
+
+    .rank{ color:var(--muted); width:40px; }
+    .num{ text-align:right; font-variant-numeric:tabular-nums; }
+    .pts{ font-weight:700; text-align:right; }
+
+    .team{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:200px;
+    }
+
+    .crest{
+      width:22px;
+      height:22px;
+      border-radius:6px;
+      background:rgba(255,255,255,.1);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      color:#fff;
+    }
+
+    .form{
+      display:flex;
+      gap:5px;
+      justify-content:flex-end;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:rgba(255,255,255,.2);
+    }
+    .w{ background:var(--good); }
+    .d{ background:var(--mid); }
+    .l{ background:var(--bad); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>リーグ順位表</h1>
+    <div class="sub">FM style / スマホ対応（横スクロール）</div>
+
+    <div class="card">
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>順位</th>
+              <th>チーム</th>
+              <th class="num">試</th>
+              <th class="num">勝</th>
+              <th class="num">分</th>
+              <th class="num">負</th>
+              <th class="num">得</th>
+              <th class="num">失</th>
+              <th class="num">差</th>
+              <th class="pts">勝点</th>
+              <th class="num">調子</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr data-zone="auto">
+              <td class="rank">1</td>
+              <td>
+                <div class="team">
+                  <div class="crest">LU</div>
+                  Luton
+                </div>
+              </td>
+              <td class="num">2</td>
+              <td class="num">2</td>
+              <td class="num">0</td>
+              <td class="num">0</td>
+              <td class="num">7</td>
+              <td class="num">1</td>
+              <td class="num">+6</td>
+              <td class="pts">6</td>
+              <td>
+                <div class="form">
+                  <span class="dot w"></span>
+                  <span class="dot w"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                </div>
+              </td>
+            </tr>
+
+            <tr data-zone="po">
+              <td class="rank">2</td>
+              <td>
+                <div class="team">
+                  <div class="crest">NO</div>
+                  Northampton
+                </div>
+              </td>
+              <td class="num">2</td>
+              <td class="num">2</td>
+              <td class="num">0</td>
+              <td class="num">0</td>
+              <td class="num">4</td>
+              <td class="num">1</td>
+              <td class="num">+3</td>
+              <td class="pts">6</td>
+              <td>
+                <div class="form">
+                  <span class="dot w"></span>
+                  <span class="dot w"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                </div>
+              </td>
+            </tr>
+
+            <tr data-zone="releg">
+              <td class="rank">22</td>
+              <td>
+                <div class="team">
+                  <div class="crest">WG</div>
+                  Wigan
+                </div>
+              </td>
+              <td class="num">2</td>
+              <td class="num">0</td>
+              <td class="num">0</td>
+              <td class="num">2</td>
+              <td class="num">2</td>
+              <td class="num">4</td>
+              <td class="num">-2</td>
+              <td class="pts">0</td>
+              <td>
+                <div class="form">
+                  <span class="dot l"></span>
+                  <span class="dot l"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
